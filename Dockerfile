@@ -11,4 +11,14 @@ RUN curl -o /tmp/anaconda.sh http://09c8d0b2229f813c1b93-c95ac804525aac4b6dba79b
 RUN useradd -mU user
 USER user
 
+ONBUILD USER root
+ONBUILD RUN useradd --system --user-group --home-dir /app app
+ONBUILD RUN mkdir /app
+ONBUILD WORKDIR /app
+ONBUILD COPY conda_requirements.txt requirements.txt /app/
+ONBUILD RUN conda create -p /env --yes --file /app/conda_requirements.txt
+ONBUILD ENV PATH /env/bin:$PATH
+ONBUILD RUN pip install -r /app/requirements.txt
+ONBUILD USER app
+
 ENTRYPOINT ["python"]
